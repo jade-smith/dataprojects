@@ -1,0 +1,299 @@
+---
+title: "HW01"
+author: "Jade Smith"
+output: pdf_document
+header-includes:
+  - \usepackage{xcolor}
+  - \usepackage{framed}
+---
+
+<!-- STUDENTS: change the "title" and "author" listed above
+DO NOT EDIT THE SECTION BELOW -->
+\colorlet{shadecolor}{gray!10}
+```{r setup, include=FALSE}
+library(knitr)
+#install the tidyverse library (do this once)
+#install.packages("tidyverse")
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 4, fig.height = 4, tidy = TRUE)
+library(readr)
+cholDat <- read_csv("cholDat.csv")
+```
+\newcommand{\hstart}{ \colorlet{shadecolor}{orange!20}
+\begin{shaded} }
+\newcommand{\hstop}{  \end{shaded} \colorlet{shadecolor}{gray!10}}
+<!-- STUDENTS: DO NOT EDIT THE SECTION ABOVE 
+start here, insert homework below -->
+
+# Problem 1
+
+## Problem 1(a)
+
+\hstart
+
+```{r 1a}
+#code for prob1a
+cholScatter <- plot(cholDat$fat, cholDat$chol, data=cholDat,
+     xlab= "Saturated Fat (mg)",
+     ylab= "Cholesterol (mg/liter)")
+```
+
+\hstop
+
+## Problem 1(b)
+
+```{r 1b}
+#code for prob1b
+chol_lm <- lm(chol ~ fat, data=cholDat)
+
+```
+
+
+\hstart
+
+```{r}
+summary(chol_lm)
+```
+
+(i) $chol_i = 578.93 + 0.540fat_i + \epsilon_i$  
+
+(ii) $\beta_1$ is the difference in average level of cholesterol in mg/liter for people that differ in daily saturated fat intake by 1 mg.  
+
+
+\hstop
+
+
+# Problem 2
+
+## Problem 2(a)
+
+\hstart
+
+```{r 2a}
+## 2a
+power.t.test(n=20, sd=18, delta= 15,
+             type="two.sample")
+```
+
+
+\hstop
+
+
+## Problem 2(b)
+
+\hstart
+
+
+```{r 2b}
+## 2b
+power.t.test(n=20, sd=25, delta= 15,
+             type="two.sample")
+```
+As standard deviation increases, power decreases.  
+
+\hstop
+
+## Problem 2(c)
+
+\hstart
+
+```{r 2c}
+## 2c
+power.t.test(power=0.90, sd=18, delta= 15,
+             type="two.sample")
+```
+n = 32
+
+
+\hstop
+
+
+##Problem 2(d)
+
+
+\hstart
+
+
+```{r 2d}
+## 2d
+```
+
+
+
+
+\hstop
+
+# Problem 3
+
+
+
+## Problem 3(a)
+
+
+\hstart
+
+```{r 3a}
+## 3a
+set.seed(2022)
+n_sims <- 1000
+p_vals <- c()
+for(i in 1:n_sims){
+  group1 <- rnorm(20,15,1) 
+  p_vals[i] <- t.test(group1,paired = FALSE, var.equal = TRUE, conf.level = 0.90)$p.value
+}
+sum(p_vals < .10)/n_sims
+```
+
+
+\hstop
+
+## Problem 3(b)
+
+
+\hstart
+
+```{r 3b}
+## 3b
+set.seed(2022)
+n_sims <- 1000
+p_vals <- c()
+for(i in 1:n_sims){
+  group1 <- rnorm(20,0,1) 
+  p_vals[i] <- t.test(group1,paired = FALSE, var.equal = TRUE, conf.level = 0.90)$p.value
+}
+sum(p_vals < .10)/n_sims
+```
+
+
+\hstop
+
+
+## Problem 3(c)
+
+\hstart
+
+If the null is true, then power has no signficance to us. Power is the probability that we would reject the null hypothesis, but if the null is true we cannot have a probability of rejecting the null. Therefore, power is useless in this case.
+
+\hstop
+
+# Problem 4
+
+## Problem 4(a)
+
+\hstart
+
+
+```{r 4a}
+## 4a
+sd_diff <- sd(cholDat$chol)/sqrt(length((cholDat$chol)))
+```
+96.977
+
+\hstop
+
+## Problem 4(b)
+
+\hstart
+
+
+
+\hstop
+
+
+# Problem 5
+
+## Problem 5(a)
+
+\hstart
+
+
+```{r}
+lifetime = c(130,155,74,180,20,70,82,58,138,110,168,160,96,104,82,60)
+temp = c(rep("A",4),rep("B",4),rep("A",4),rep("B",4))
+temp = as.factor(temp)
+material = c(rep("A",8),rep("B",8))
+material = as.factor(material)
+batteries = data.frame(lifetime,temp,material)
+
+data_batteries <- lm(lifetime ~ material + temp, data=batteries)
+summary(data_batteries)
+```
+Temp is statistically significant
+
+\hstop
+
+
+
+## Problem 5(b)
+
+
+\hstart
+
+```{r 5b}
+## 5b
+data_batteries <- lm(lifetime ~ material + temp + temp:material, data=batteries)
+summary(data_batteries)
+```
+The interaction is not statistically significant.
+
+
+\hstop
+
+
+## Problem 5(c)
+
+
+\hstart
+
+```{r 5c}
+## 5c
+interaction.plot(temp,material,lifetime)
+```
+As the temperature increases, the average lifetime decreases. There does not seem to be an interaction between temperature and material. Temperature affects both materials in the same manner.
+
+
+\hstop
+
+## Problem 5(d)
+
+
+\hstart
+
+```{r 5d}
+## 5d
+library(ggplot2)
+library(dplyr)
+lifetime = c(130,155,74,180,20,70,82,58,138,110,168,160,96,104,82,60)
+temp = c(rep("A",4),rep("B",4),rep("A",4),rep("B",4))
+temp = as.factor(temp)
+material = c(rep("A",8),rep("B",8))
+material = as.factor(material)
+batteries = data.frame(lifetime,temp,material)
+batteries %>%
+group_by(material, temp) %>%
+summarise(lt_groups = mean(lifetime)) -> batteries2
+batteries2 %>%
+ggplot() +
+aes(x = material, y = lt_groups, color = temp) +
+geom_line(aes(group = temp)) +
+geom_point() +
+ylab("Avg Lifetime (hours)") +
+ggtitle("Battery
+Interaction Plot")  
+```
+
+
+
+\hstop
+
+
+
+
+<!-- STUDENTS: STOP HERE
+DO NOT EDIT THE SECTION BELOW -->
+
+## Appendix
+
+```{r show-code, ref.label = all_labels(), echo = TRUE, eval = FALSE}
+
+```
